@@ -43,6 +43,11 @@ public class TerrainGenerator : MonoBehaviour
             int goalSpawnVertexIndex = Random.Range(0, vertices.Length);
             goal.transform.position = vertices[goalSpawnVertexIndex] + tiles[goalSpawnTileIndex].transform.position;
         }
+
+        if(player.transform.position.y < -3f)
+        {
+            Destroy(player);
+        }
     }
 
     // map generation

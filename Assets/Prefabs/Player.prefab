@@ -212,5 +212,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dccb092177a0e3a4f9999eb82cb5983a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 0}
-  walkSpeed: 10
+  rotationSpeed: 50
+  rotationSpeedPrecise: 20
+  power: 0
+  maxPower: 50
+  powerIncrement: 10
+  pointer: {fileID: 0}
+  powerPointer: {fileID: 0}
+  rb: {fileID: 6456263212597764333}
+  charging: 0
