@@ -20,6 +20,14 @@ public class PathTileGeneration : MonoBehaviour
     private Color pathColor;
     private char[,] pathMaze;
 
+    enum IsPath
+    {
+        yes, 
+        no, 
+        notapplicable
+    }
+    private int mazeSize;
+
     // objects borrowed from class examples and https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
     [System.Serializable]
     public class Wave
@@ -54,6 +62,7 @@ public class PathTileGeneration : MonoBehaviour
             Debug.LogWarning("waiting for finish");
         }
         // mazeGenerator.PrintMaze();
+        mazeSize = mazeGenerator.size;
 
         GenerateTile();
     }
@@ -126,6 +135,9 @@ public class PathTileGeneration : MonoBehaviour
         int tileDepth = heightMap.GetLength(0);
         int tileWidth = heightMap.GetLength(1);
 
+        // for the second path pass to connect the mazes
+        IsPath[,] paths = new IsPath[11, 11];
+
         // make color map with pixel colors
         Color[] colorMap = new Color[tileDepth * tileWidth];
         for(int mapZIndex = 0; mapZIndex < tileDepth; mapZIndex++)
@@ -138,6 +150,15 @@ public class PathTileGeneration : MonoBehaviour
                 
                 TerrainType terrainType = ChooseTerrainType(height);
                 colorMap[colorIndex] = terrainType.color;
+                
+                if(terrainType.name != "sand")
+                {
+                    paths[mapXIndex, mapZIndex] = IsPath.notapplicable;
+                }
+                else
+                {
+                    paths[mapXIndex, mapZIndex] = IsPath.no;
+                }
             }
         }
 
@@ -150,11 +171,53 @@ public class PathTileGeneration : MonoBehaviour
                 float height = heightMap[mapZIndex, mapXIndex];
                 TerrainType terrainType = ChooseTerrainType(height);
 
-                // debug
-                mazeGenerator.PrintMaze();
-
-                if(terrainType.name == "sand" && pathMaze[mapXIndex, mapZIndex] == 'O')
+                if(terrainType.name == "sand" && pathMaze[(int) (mapXIndex/(11f/mazeSize)), (int) (mapZIndex/(11f/mazeSize))] == 'O')
                 {
+                    paths[mapXIndex, mapZIndex] = IsPath.yes;
+                    colorMap[colorIndex] = pathColor;
+                }
+            }
+        }
+
+        // connect bottoms and right of paths
+        for(int mapZIndex = 0; mapZIndex < 11; mapZIndex++)
+        {
+            for(int mapXIndex = 0; mapXIndex < 11; mapXIndex++)
+            {
+                int colorIndex = mapZIndex * tileWidth + mapXIndex;
+                float height = heightMap[mapZIndex, mapXIndex];
+                TerrainType terrainType = ChooseTerrainType(height);
+
+                if(mapZIndex > 9 && (int) (mapXIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex, mapZIndex-1] == IsPath.yes)
+                {
+                    paths[mapXIndex, mapZIndex] = IsPath.yes;
+                    colorMap[colorIndex] = pathColor;
+                }
+                else if(mapXIndex > 9 && (int) (mapZIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex-1, mapZIndex] == IsPath.yes)
+                {
+                    paths[mapXIndex, mapZIndex] = IsPath.yes;
+                    colorMap[colorIndex] = pathColor;
+                }
+            }
+        }
+
+        // connect tops and lefts of paths
+        for(int mapZIndex = 10; mapZIndex >= 0; mapZIndex--)
+        {
+            for(int mapXIndex = 10; mapXIndex >= 0; mapXIndex--)
+            {
+                int colorIndex = mapZIndex * tileWidth + mapXIndex;
+                float height = heightMap[mapZIndex, mapXIndex];
+                TerrainType terrainType = ChooseTerrainType(height);
+
+                if(mapZIndex < 2 && (int) (mapXIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex, mapZIndex+1] == IsPath.yes)
+                {
+                    paths[mapXIndex, mapZIndex] = IsPath.yes;
+                    colorMap[colorIndex] = pathColor;
+                }
+                if(mapXIndex < 2 && (int) (mapZIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex+1, mapZIndex] == IsPath.yes)
+                {
+                    paths[mapXIndex, mapZIndex] = IsPath.yes;
                     colorMap[colorIndex] = pathColor;
                 }
             }

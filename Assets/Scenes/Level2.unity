@@ -152,8 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3e791927e2b66e49b0207ca25a5aca3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  numTilesWidth: 3
-  numTilesDepth: 3
+  numTilesWidth: 5
+  numTilesDepth: 5
   tilePrefab: {fileID: 1118959056386763627, guid: 81a2a44b1bfe9d440a921fd9e9f6bb01, type: 3}
   playerPrefab: {fileID: 8545000433091664117, guid: be71e4e2fca69af4ba23ba6a1737874e, type: 3}
   goalPrefab: {fileID: 1761350854608460220, guid: f0abb27cf1012614ea5ec6ea1f09c608, type: 3}

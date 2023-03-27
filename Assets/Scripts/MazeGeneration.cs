@@ -46,6 +46,7 @@ public class MazeGeneration : MonoBehaviour
 
         // start with tile at (1, 1)
         tilesToTry.Push(new Vector2Int(1, 1));
+        // tilesToTry.Push(new Vector2Int((int) Random.Range(1, size-1), (int) Random.Range(1, size-1)));
 
         while(tilesToTry.Count > 0)
         {
