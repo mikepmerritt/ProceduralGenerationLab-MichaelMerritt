@@ -86,6 +86,10 @@ public class TerrainGenerationInfinite : MonoBehaviour
                 tiles.Add(tile);
             }
         }
+
+        // update previous player position used to render the new tiles
+        prevRenderTileX = playerTileX;
+        prevRenderTileZ = playerTileZ;
     }
 
     // destroy all tiles
