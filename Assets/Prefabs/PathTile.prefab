@@ -167,13 +167,13 @@ MonoBehaviour:
     height: 1
     color: {r: 1, g: 1, b: 1, a: 1}
   waves:
-  - seed: 2612
+  - seed: 1000
     frequency: 1
     amplitude: 1
-  - seed: 2612
+  - seed: 1000
     frequency: 0.5
     amplitude: 2
-  - seed: 2612
+  - seed: 1000
     frequency: 0.25
     amplitude: 4
   pathColor: {r: 0.3372549, g: 0.3372549, b: 0.3372549, a: 1}

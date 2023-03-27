@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9920e2903e2ee60438eca47bfa37002b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderDistance: 2
+  renderDistance: 3
   tilePrefab: {fileID: 7033900239934869528, guid: e9f4f7a8807e60f4bbec89adba5a7e6b, type: 3}
   playerPrefab: {fileID: 8545000433091664117, guid: be71e4e2fca69af4ba23ba6a1737874e, type: 3}
 --- !u!1 &705507993
