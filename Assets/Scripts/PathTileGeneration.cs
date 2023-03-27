@@ -19,7 +19,11 @@ public class PathTileGeneration : MonoBehaviour
     [SerializeField]
     private Color pathColor;
     private char[,] pathMaze;
+    [SerializeField]
+    private string terrainToPutPathOn;
 
+    // enum made to provide path states for every pixel in a tile in a 2D structure
+    // a 2D array of these enums is used to determine if the path should be extended for a given tile or not
     enum IsPath
     {
         yes, 
@@ -45,7 +49,6 @@ public class PathTileGeneration : MonoBehaviour
         public Color color;
     }
 
-    // Start is called before the first frame update
     void Start()
     {
         meshFilter = GetComponent<MeshFilter>();
@@ -55,11 +58,12 @@ public class PathTileGeneration : MonoBehaviour
 
         // get maze for path generation
         pathMaze = mazeGenerator.GenerateMaze();
-        Debug.Log(mazeGenerator.stillRunning);
+        
+        // wait for maze to finish generating
         while(mazeGenerator.stillRunning)
         {
             // do nothing, we need to wait for the maze to load
-            Debug.LogWarning("waiting for finish");
+            Debug.LogWarning("waiting for maze to finish");
         }
         // mazeGenerator.PrintMaze();
         mazeSize = mazeGenerator.size;
@@ -67,8 +71,10 @@ public class PathTileGeneration : MonoBehaviour
         GenerateTile();
     }
 
+    // for maze debugging purposes only, nothing actually runs here under normal circumstances
     void Update()
     {
+        // for debugging purposes
         // mazeGenerator.PrintMaze();
     }
 
@@ -129,13 +135,14 @@ public class PathTileGeneration : MonoBehaviour
     }
 
     // create the colored texture to use on the tile based on height
+    // note: the bulk of the level 2 changes take place in here
     public Texture2D GenerateTileColors(float[,] heightMap)
     {
         // get size of height map
         int tileDepth = heightMap.GetLength(0);
         int tileWidth = heightMap.GetLength(1);
 
-        // for the second path pass to connect the mazes
+        // used for the second phase of path passes to connect the mazes on separate tiles
         IsPath[,] paths = new IsPath[11, 11];
 
         // make color map with pixel colors
@@ -151,10 +158,12 @@ public class PathTileGeneration : MonoBehaviour
                 TerrainType terrainType = ChooseTerrainType(height);
                 colorMap[colorIndex] = terrainType.color;
                 
-                if(terrainType.name != "sand")
+                // if not the correct terrain type, mark as not applicable for path marking
+                if(terrainType.name != terrainToPutPathOn)
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.notapplicable;
                 }
+                // otherwise mark as not currently having path
                 else
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.no;
@@ -162,7 +171,7 @@ public class PathTileGeneration : MonoBehaviour
             }
         }
 
-        // if the tile is on sandy land and empty in the maze, make it a path color
+        // if the pixel is on the correct terrain type for path and empty in the maze, make it a path color instead of the terrain color
         for(int mapZIndex = 0; mapZIndex < tileDepth; mapZIndex++)
         {
             for(int mapXIndex = 0; mapXIndex < tileWidth; mapXIndex++)
@@ -171,7 +180,9 @@ public class PathTileGeneration : MonoBehaviour
                 float height = heightMap[mapZIndex, mapXIndex];
                 TerrainType terrainType = ChooseTerrainType(height);
 
-                if(terrainType.name == "sand" && pathMaze[(int) (mapXIndex/(11f/mazeSize)), (int) (mapZIndex/(11f/mazeSize))] == 'O')
+                // the maze is smaller than the tile (11x11 resulted in too many paths, so used 9x9), 
+                // so divide by conversion factor (11f/mapSize) to scale the image
+                if(terrainType.name == terrainToPutPathOn && pathMaze[(int) (mapXIndex/(11f/mazeSize)), (int) (mapZIndex/(11f/mazeSize))] == 'O')
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.yes;
                     colorMap[colorIndex] = pathColor;
@@ -179,7 +190,8 @@ public class PathTileGeneration : MonoBehaviour
             }
         }
 
-        // connect bottoms and right of paths
+        // connect bottoms and right of paths on tile
+        // the mazes are surrounded by a border of non-path tiles, so extend the paths to the border tiles on a couple pixels
         for(int mapZIndex = 0; mapZIndex < 11; mapZIndex++)
         {
             for(int mapXIndex = 0; mapXIndex < 11; mapXIndex++)
@@ -188,12 +200,18 @@ public class PathTileGeneration : MonoBehaviour
                 float height = heightMap[mapZIndex, mapXIndex];
                 TerrainType terrainType = ChooseTerrainType(height);
 
-                if(mapZIndex > 9 && (int) (mapXIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex, mapZIndex-1] == IsPath.yes)
+                // tiles can be connected on only every other pixel that could have a path 
+                // (only odd pixels can have a path, so I made mod 4 == 1 
+                // the connections to avoid getting a checkerboard but still get connections)
+
+                // the maze is smaller than the tile (11x11 resulted in too many paths, so used 9x9), 
+                // so divide by conversion factor (11f/mapSize) to scale the image
+                if(mapZIndex > 9 && (int) (mapXIndex/(11f/mazeSize)) % 4 == 1 && paths[mapXIndex, mapZIndex-1] == IsPath.yes)
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.yes;
                     colorMap[colorIndex] = pathColor;
                 }
-                else if(mapXIndex > 9 && (int) (mapZIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex-1, mapZIndex] == IsPath.yes)
+                else if(mapXIndex > 9 && (int) (mapZIndex/(11f/mazeSize)) % 4 == 1 && paths[mapXIndex-1, mapZIndex] == IsPath.yes)
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.yes;
                     colorMap[colorIndex] = pathColor;
@@ -201,7 +219,8 @@ public class PathTileGeneration : MonoBehaviour
             }
         }
 
-        // connect tops and lefts of paths
+        // connect tops and lefts of paths on tile
+        // the mazes are surrounded by a border of non-path tiles, so extend the paths to the border tiles on a couple pixels
         for(int mapZIndex = 10; mapZIndex >= 0; mapZIndex--)
         {
             for(int mapXIndex = 10; mapXIndex >= 0; mapXIndex--)
@@ -210,12 +229,18 @@ public class PathTileGeneration : MonoBehaviour
                 float height = heightMap[mapZIndex, mapXIndex];
                 TerrainType terrainType = ChooseTerrainType(height);
 
-                if(mapZIndex < 2 && (int) (mapXIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex, mapZIndex+1] == IsPath.yes)
+                // tiles can be connected on only every other pixel that could have a path 
+                // (only odd pixels can have a path, so I made mod 4 == 1 
+                // the connections to avoid getting a checkerboard but still get connections)
+
+                // the maze is smaller than the tile (11x11 resulted in too many paths, so used 9x9), 
+                // so divide by conversion factor (11f/mapSize) to scale the image
+                if(mapZIndex < 2 && (int) (mapXIndex/(11f/mazeSize)) % 4 == 1 && paths[mapXIndex, mapZIndex+1] == IsPath.yes)
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.yes;
                     colorMap[colorIndex] = pathColor;
                 }
-                if(mapXIndex < 2 && (int) (mapZIndex/(11f/mazeSize)) % 2 == 1 && paths[mapXIndex+1, mapZIndex] == IsPath.yes)
+                if(mapXIndex < 2 && (int) (mapZIndex/(11f/mazeSize)) % 4 == 1 && paths[mapXIndex+1, mapZIndex] == IsPath.yes)
                 {
                     paths[mapXIndex, mapZIndex] = IsPath.yes;
                     colorMap[colorIndex] = pathColor;
@@ -233,6 +258,7 @@ public class PathTileGeneration : MonoBehaviour
     }
 
     // determine what terrain should be used for each height
+    // note: this only determines using height, path is checked when the texture is made
     TerrainType ChooseTerrainType(float height)
     {
         // for each terrain type, check if the height is lower than the one for the terrain type
