@@ -14,7 +14,7 @@ public class TerrainGenerationWithSwarm : MonoBehaviour
     private List<GameObject> tiles;
     private GameObject player, goal, swarm;
 
-    int playerSpawnTileIndex, playerSpawnVertexIndex;
+    private int playerSpawnTileIndex, playerSpawnVertexIndex;
     
     void Start()
     {
@@ -83,7 +83,7 @@ public class TerrainGenerationWithSwarm : MonoBehaviour
                     this.gameObject.transform.position.y,
                     this.gameObject.transform.position.z + zTileIndex * tileDepth);
                 // instantiate a new Tile
-                GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+                GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity);
                 tiles.Add(tile);
             }
         }

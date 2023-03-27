@@ -14,7 +14,7 @@ public class TerrainGeneration : MonoBehaviour
     private List<GameObject> tiles;
     private GameObject player, goal;
 
-    int playerSpawnTileIndex, playerSpawnVertexIndex;
+    private int playerSpawnTileIndex, playerSpawnVertexIndex;
     
     void Start()
     {
@@ -31,7 +31,7 @@ public class TerrainGeneration : MonoBehaviour
             player = Instantiate(playerPrefab);
             Vector3[] vertices = tiles[playerSpawnTileIndex].GetComponent<MeshFilter>().mesh.vertices;
             playerSpawnVertexIndex = Random.Range(0, vertices.Length);
-            player.transform.position = vertices[playerSpawnVertexIndex] + tiles[playerSpawnTileIndex].transform.position + new Vector3(0, 1f, 0);
+            player.transform.position = vertices[playerSpawnVertexIndex] + tiles[playerSpawnTileIndex].transform.position + new Vector3(0, 3f, 0);
         }
 
         if(goal == null)
@@ -44,6 +44,7 @@ public class TerrainGeneration : MonoBehaviour
             goal.transform.position = vertices[goalSpawnVertexIndex] + tiles[goalSpawnTileIndex].transform.position;
         }
 
+        // destroy player so they can be respawned if they fall off the map
         if(player.transform.position.y < -3f)
         {
             Destroy(player);
@@ -69,7 +70,7 @@ public class TerrainGeneration : MonoBehaviour
                     this.gameObject.transform.position.y,
                     this.gameObject.transform.position.z + zTileIndex * tileDepth);
                 // instantiate a new Tile
-                GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity) as GameObject;
+                GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity);
                 tiles.Add(tile);
             }
         }
