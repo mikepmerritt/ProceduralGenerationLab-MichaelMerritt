@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileGeneration : MonoBehaviour
+public class PathTileGeneration : MonoBehaviour
 {
     private MeshFilter meshFilter;
     private MeshRenderer meshRenderer;
@@ -15,6 +15,10 @@ public class TileGeneration : MonoBehaviour
     private TerrainType[] terrainTypes;
     [SerializeField]
     private Wave[] waves;
+    private MazeGeneration mazeGenerator;
+    [SerializeField]
+    private Color pathColor;
+    private char[,] pathMaze;
 
     // objects borrowed from class examples and https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
     [System.Serializable]
@@ -39,7 +43,24 @@ public class TileGeneration : MonoBehaviour
         meshFilter = GetComponent<MeshFilter>();
         meshRenderer = GetComponent<MeshRenderer>();
         meshCollider = GetComponent<MeshCollider>();
+        mazeGenerator = GetComponent<MazeGeneration>();
+
+        // get maze for path generation
+        pathMaze = mazeGenerator.GenerateMaze();
+        Debug.Log(mazeGenerator.stillRunning);
+        while(mazeGenerator.stillRunning)
+        {
+            // do nothing, we need to wait for the maze to load
+            Debug.LogWarning("waiting for finish");
+        }
+        // mazeGenerator.PrintMaze();
+
         GenerateTile();
+    }
+
+    void Update()
+    {
+        // mazeGenerator.PrintMaze();
     }
 
     // this code is adapted from https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
@@ -120,6 +141,25 @@ public class TileGeneration : MonoBehaviour
             }
         }
 
+        // if the tile is on sandy land and empty in the maze, make it a path color
+        for(int mapZIndex = 0; mapZIndex < tileDepth; mapZIndex++)
+        {
+            for(int mapXIndex = 0; mapXIndex < tileWidth; mapXIndex++)
+            {
+                int colorIndex = mapZIndex * tileWidth + mapXIndex;
+                float height = heightMap[mapZIndex, mapXIndex];
+                TerrainType terrainType = ChooseTerrainType(height);
+
+                // debug
+                mazeGenerator.PrintMaze();
+
+                if(terrainType.name == "sand" && pathMaze[mapXIndex, mapZIndex] == 'O')
+                {
+                    colorMap[colorIndex] = pathColor;
+                }
+            }
+        }
+
         // create a new texture and set its pixel colors
         Texture2D tileTexture = new Texture2D(tileWidth, tileDepth);
         tileTexture.wrapMode = TextureWrapMode.Clamp;
@@ -175,3 +215,4 @@ public class TileGeneration : MonoBehaviour
         meshCollider.sharedMesh = meshFilter.mesh;
     }
 }
+

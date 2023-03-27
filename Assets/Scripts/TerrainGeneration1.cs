@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TerrainGenerator : MonoBehaviour
+public class TerrainGeneration1 : MonoBehaviour
 {
-    // this code is adapted https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
+    // this code is adapted from https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
     // also parts from https://github.com/greggddqu/ProceduralGenExs/blob/main/Assets/Scripts/MyLevelGen.cs
 
     [SerializeField]
