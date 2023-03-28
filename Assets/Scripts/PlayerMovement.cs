@@ -7,13 +7,15 @@ public class PlayerMovement : MonoBehaviour
 {
     // this entire script is in charge of the player movement established first in level 1
     [SerializeField]
-    private float rotationSpeed, rotationSpeedPrecise, power, maxPower, powerIncrement;
+    private float rotationSpeed, rotationSpeedPrecise, power, maxPower, powerIncrement, pointerMin, pointerMax;
     [SerializeField]
-    private GameObject pointer, powerPointer;
+    private GameObject pointer;
     [SerializeField]
     private Rigidbody rb;
     [SerializeField]
     private bool charging = false;
+    [SerializeField]
+    private Material notChargingMaterial, chargingMaterial, maxChargeMaterial;
 
     // charge force when held
     public void OnMouseDown()
@@ -47,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         if(power < maxPower && (charging || Input.GetKey(KeyCode.Space)))
         {
             power += powerIncrement * Time.deltaTime;
+            UpdatePointer();
         }
 
         // spacebar launch
@@ -62,5 +65,31 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(this.transform.forward * power, ForceMode.Impulse);
         charging = false;
         power = 0;
+        UpdatePointer();
+    }
+
+    // rescale the pointer
+    public void UpdatePointer()
+    {
+        // determine how much to scale pointer by
+        float pointerSize = Mathf.Lerp(pointerMin, pointerMax, (power/maxPower));
+
+        // scale pointer size and make it stay in front of the player
+        pointer.transform.localScale = new Vector3(pointer.transform.localScale.x, pointerSize, pointer.transform.localScale.z);
+        pointer.transform.localPosition = new Vector3(pointer.transform.localPosition.x, pointer.transform.localPosition.y, pointerSize);
+
+        // pick material
+        if (pointerSize == pointerMin)
+        {
+            pointer.GetComponent<MeshRenderer>().material = notChargingMaterial;
+        }
+        else if (pointerSize == pointerMax)
+        {
+            pointer.GetComponent<MeshRenderer>().material = maxChargeMaterial;
+        }
+        else
+        {
+            pointer.GetComponent<MeshRenderer>().material = chargingMaterial;
+        }
     }
 }

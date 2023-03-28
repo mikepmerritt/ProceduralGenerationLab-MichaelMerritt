@@ -39,7 +39,7 @@ public class TerrainGenerationInfinite : MonoBehaviour
             {
                 player = Instantiate(playerPrefab);
                 Vector3[] vertices = tiles[0].GetComponent<MeshFilter>().mesh.vertices;
-                player.transform.position = vertices[60] + new Vector3(0, 3f, 0);
+                player.transform.position = vertices[60] + tiles[0].transform.position + new Vector3(0, 3f, 0);
                 GenerateTerrain();
             }
         }

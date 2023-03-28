@@ -11,4 +11,15 @@ public class GoalBehavior : MonoBehaviour
         string newScene = "Level" + (int.Parse(currentScene.Substring(5, 1)) + 1);
         SceneManager.LoadScene(newScene);
     }
+
+    void Update()
+    {
+        // skip to next scene with enter
+        if(Input.GetKeyDown(KeyCode.Return))
+        {
+            string currentScene = SceneManager.GetActiveScene().name;
+            string newScene = "Level" + (int.Parse(currentScene.Substring(5, 1)) + 1);
+            SceneManager.LoadScene(newScene);
+        }
+    }
 }
