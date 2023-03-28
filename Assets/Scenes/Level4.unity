@@ -174,7 +174,7 @@ MonoBehaviour:
   goalPrefab: {fileID: 1761350854608460220, guid: f0abb27cf1012614ea5ec6ea1f09c608, type: 3}
   swarmPrefab: {fileID: 5165773129610343637, guid: a00db1abfb788b1468e0931a488426be, type: 3}
   fencePrefab: {fileID: 2141163615797318979, guid: a46914c3a41884f4c97b6ec3ea7e6d3e, type: 3}
-  fenceConnectorPrefab: {fileID: 1108467928933717811, guid: d9b58b8cbf8c75d459ca462c1c7e51bd, type: 3}
+  despawnerPrefab: {fileID: 4891265589184078506, guid: cd95cff236e3aec469a7d343c8a8ce1d, type: 3}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

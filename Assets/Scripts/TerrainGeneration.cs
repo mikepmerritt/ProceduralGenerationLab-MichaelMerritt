@@ -7,6 +7,10 @@ public class TerrainGeneration : MonoBehaviour
     // this code is adapted from https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
     // also parts from https://github.com/greggddqu/ProceduralGenExs/blob/main/Assets/Scripts/MyLevelGen.cs
 
+    // this is the standard terrain generation used for level 1
+    // it is also used for level 2 with the path tile prefab instead of the normal tile
+    // the other levels adapt this one
+
     [SerializeField]
     private int numTilesWidth, numTilesDepth;
     [SerializeField]
@@ -54,22 +58,22 @@ public class TerrainGeneration : MonoBehaviour
     // map generation
     private void GenerateTerrain()
     {
-        // get the tile dimensions from the tile Prefab
+        // get the tile dimensions from the tile prefab
         Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
         int tileWidth = (int)tileSize.x;
         int tileDepth = (int)tileSize.z;
 
-        // for each Tile, instantiate a Tile in the correct position
+        // instantiate 2D grid of tiles
         for (int xTileIndex = 0; xTileIndex < numTilesWidth; xTileIndex++)
         {
             for (int zTileIndex = 0; zTileIndex < numTilesDepth; zTileIndex++)
             {
-                // calculate the tile position based on the X and Z indices
+                // calculate tile position using index and tile size
                 Vector3 tilePosition = new Vector3(
                     this.gameObject.transform.position.x + xTileIndex * tileWidth,
                     this.gameObject.transform.position.y,
                     this.gameObject.transform.position.z + zTileIndex * tileDepth);
-                // instantiate a new Tile
+                // create new tile and add to list
                 GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity);
                 tiles.Add(tile);
             }

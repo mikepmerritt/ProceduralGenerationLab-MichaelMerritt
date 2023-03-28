@@ -5,6 +5,7 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
+    // this entire script is in charge of the player movement established first in level 1
     [SerializeField]
     private float rotationSpeed, rotationSpeedPrecise, power, maxPower, powerIncrement;
     [SerializeField]
@@ -57,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // launch the ball forward
     public void LaunchBall()
     {
         rb.AddForce(this.transform.forward * power, ForceMode.Impulse);

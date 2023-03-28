@@ -55,13 +55,14 @@ public class TerrainGenerationInfinite : MonoBehaviour
         }
     }
 
-    // map generation
+    // map generation using render distance around the player
+    // this is where the infinite map generation for level 5 occurs
     private void GenerateTerrain()
     {
         // destroy old tiles
         DestroyAllTiles();
 
-        // get the tile dimensions from the tile Prefab
+        // get the tile dimensions from the tile prefab
         Vector3 tileSize = tilePrefab.GetComponent<MeshRenderer>().bounds.size;
         int tileWidth = (int)tileSize.x;
         int tileDepth = (int)tileSize.z;
@@ -70,18 +71,18 @@ public class TerrainGenerationInfinite : MonoBehaviour
         int playerTileX = (int) (player.transform.position.x / 10);
         int playerTileZ = (int) (player.transform.position.z / 10);
 
-        // for each tile, instantiate a tile in the correct position
+        // instantiate 2D grid of tiles
         // in this case, we go in a square with a side length of (renderDistance * 2 + 1)
         for (int xTileIndex = playerTileX - renderDistance; xTileIndex <= playerTileX + renderDistance; xTileIndex++)
         {
             for (int zTileIndex = playerTileZ - renderDistance; zTileIndex <= playerTileZ + renderDistance; zTileIndex++)
             {
-                // calculate the tile position based on the X and Z indices
+                // calculate tile position using index and tile size
                 Vector3 tilePosition = new Vector3(
                     this.gameObject.transform.position.x + xTileIndex * tileWidth,
                     this.gameObject.transform.position.y,
                     this.gameObject.transform.position.z + zTileIndex * tileDepth);
-                // instantiate a new tile
+                // create new tile and add to list
                 GameObject tile = Instantiate(tilePrefab, tilePosition, Quaternion.identity);
                 tiles.Add(tile);
             }

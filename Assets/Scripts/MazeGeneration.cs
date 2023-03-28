@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class MazeGeneration : MonoBehaviour
 {
+    // this class takes the maze to be used on the tiles to generate the paths for level 2
     public int size;
     public char[,] maze;
     public bool stillRunning = true;
