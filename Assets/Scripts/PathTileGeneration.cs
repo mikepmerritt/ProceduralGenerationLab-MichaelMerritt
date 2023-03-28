@@ -21,6 +21,7 @@ public class PathTileGeneration : MonoBehaviour
     private char[,] pathMaze;
     [SerializeField]
     private string terrainToPutPathOn;
+    public bool finishedGenerating = false;
 
     // enum made to provide path states for every pixel in a tile in a 2D structure
     // a 2D array of these enums is used to determine if the path should be extended for a given tile or not
@@ -302,6 +303,8 @@ public class PathTileGeneration : MonoBehaviour
         meshFilter.mesh.RecalculateBounds();
         meshFilter.mesh.RecalculateNormals();
         meshCollider.sharedMesh = meshFilter.mesh;
+
+        finishedGenerating = true; // fully generated flag enabled so other scripts can now use the tile
     }
 }
 

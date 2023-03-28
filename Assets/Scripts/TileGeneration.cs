@@ -15,6 +15,7 @@ public class TileGeneration : MonoBehaviour
     private TerrainType[] terrainTypes;
     [SerializeField]
     private Wave[] waves;
+    public bool finishedGenerating = false;
 
     // objects borrowed from class examples and https://gamedevacademy.org/complete-guide-to-procedural-level-generation-in-unity-part-1/
     [System.Serializable]
@@ -173,5 +174,7 @@ public class TileGeneration : MonoBehaviour
         meshFilter.mesh.RecalculateBounds();
         meshFilter.mesh.RecalculateNormals();
         meshCollider.sharedMesh = meshFilter.mesh;
+
+        finishedGenerating = true; // fully generated flag enabled so other scripts can now use the tile
     }
 }

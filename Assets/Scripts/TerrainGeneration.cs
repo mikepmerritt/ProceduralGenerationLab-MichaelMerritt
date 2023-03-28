@@ -32,24 +32,38 @@ public class TerrainGeneration : MonoBehaviour
         {
             // pick tile to spawn player on
             playerSpawnTileIndex = Random.Range(0, tiles.Count);
-            player = Instantiate(playerPrefab);
-            Vector3[] vertices = tiles[playerSpawnTileIndex].GetComponent<MeshFilter>().mesh.vertices;
-            playerSpawnVertexIndex = Random.Range(0, vertices.Length);
-            player.transform.position = vertices[playerSpawnVertexIndex] + tiles[playerSpawnTileIndex].transform.position + new Vector3(0, 3f, 0);
+
+            // if the tile is fully generated, place the player above it
+            if((tiles[playerSpawnTileIndex].GetComponent<TileGeneration>() != null && (tiles[playerSpawnTileIndex].GetComponent<TileGeneration>().finishedGenerating))
+                || (tiles[playerSpawnTileIndex].GetComponent<PathTileGeneration>() != null && (tiles[playerSpawnTileIndex].GetComponent<PathTileGeneration>().finishedGenerating)))
+            {
+                player = Instantiate(playerPrefab);
+                Vector3[] vertices = tiles[playerSpawnTileIndex].GetComponent<MeshFilter>().mesh.vertices;
+                playerSpawnVertexIndex = Random.Range(0, vertices.Length);
+                // Debug.Log("P " + vertices[playerSpawnVertexIndex]);
+                player.transform.position = vertices[playerSpawnVertexIndex] + tiles[playerSpawnTileIndex].transform.position + new Vector3(0, 3f, 0);
+            }
         }
 
         if(goal == null)
         {
             // pick tile to spawn goal on
             int goalSpawnTileIndex = Random.Range(0, tiles.Count);
-            goal = Instantiate(goalPrefab);
-            Vector3[] vertices = tiles[goalSpawnTileIndex].GetComponent<MeshFilter>().mesh.vertices;
-            int goalSpawnVertexIndex = Random.Range(0, vertices.Length);
-            goal.transform.position = vertices[goalSpawnVertexIndex] + tiles[goalSpawnTileIndex].transform.position;
+
+            // if the tile is fully generated, place the goal above it
+            if((tiles[goalSpawnTileIndex].GetComponent<TileGeneration>() != null && (tiles[goalSpawnTileIndex].GetComponent<TileGeneration>().finishedGenerating))
+                || (tiles[goalSpawnTileIndex].GetComponent<PathTileGeneration>() != null && (tiles[goalSpawnTileIndex].GetComponent<PathTileGeneration>().finishedGenerating)))
+            {
+                goal = Instantiate(goalPrefab);
+                Vector3[] vertices = tiles[goalSpawnTileIndex].GetComponent<MeshFilter>().mesh.vertices;
+                int goalSpawnVertexIndex = Random.Range(0, vertices.Length);
+                // Debug.Log("G " + vertices[goalSpawnVertexIndex]);
+                goal.transform.position = vertices[goalSpawnVertexIndex] + tiles[goalSpawnTileIndex].transform.position;
+            }
         }
 
         // destroy player so they can be respawned if they fall off the map
-        if(player.transform.position.y < -3f)
+        if(player != null && player.transform.position.y < -3f)
         {
             Destroy(player);
         }

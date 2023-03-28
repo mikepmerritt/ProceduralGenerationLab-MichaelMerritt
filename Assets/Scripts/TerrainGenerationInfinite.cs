@@ -30,16 +30,22 @@ public class TerrainGenerationInfinite : MonoBehaviour
     {
         if(player == null)
         {
-            // spawn player at (0, 0) tile
+            // pick tile to spawn player on
             playerSpawnTileIndex = Random.Range(0, tiles.Count);
-            player = Instantiate(playerPrefab);
-            Vector3[] vertices = tiles[0].GetComponent<MeshFilter>().mesh.vertices;
-            player.transform.position = vertices[60] + new Vector3(0, 3f, 0);
-            GenerateTerrain();
+
+            // if the tile is fully generated, place the player above it
+            if((tiles[playerSpawnTileIndex].GetComponent<TileGeneration>() != null && (tiles[playerSpawnTileIndex].GetComponent<TileGeneration>().finishedGenerating))
+                || (tiles[playerSpawnTileIndex].GetComponent<PathTileGeneration>() != null && (tiles[playerSpawnTileIndex].GetComponent<PathTileGeneration>().finishedGenerating)))
+            {
+                player = Instantiate(playerPrefab);
+                Vector3[] vertices = tiles[0].GetComponent<MeshFilter>().mesh.vertices;
+                player.transform.position = vertices[60] + new Vector3(0, 3f, 0);
+                GenerateTerrain();
+            }
         }
 
         // destroy the player if they fall off the map
-        if(player.transform.position.y < -3f)
+        if(player != null && player.transform.position.y < -3f)
         {
             Destroy(player);
 
@@ -49,7 +55,7 @@ public class TerrainGenerationInfinite : MonoBehaviour
         }
 
         // check if the player has moved far enough that the tiles need to be re-rendered
-        if(player.transform.position.x / 10 != prevRenderTileX || player.transform.position.z / 10 != prevRenderTileZ)
+        if(player != null && ((int) (player.transform.position.x) / 10 != prevRenderTileX || (int) (player.transform.position.z) / 10 != prevRenderTileZ))
         {
             GenerateTerrain();
         }
@@ -100,7 +106,7 @@ public class TerrainGenerationInfinite : MonoBehaviour
         {
             GameObject tile = tiles[i];
             tiles.Remove(tile);
-            Destroy(tile);
+            DestroyImmediate(tile);
         }
     }
 }

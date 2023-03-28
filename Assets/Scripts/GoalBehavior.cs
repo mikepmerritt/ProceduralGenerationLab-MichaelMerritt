@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GoalBehavior : MonoBehaviour
 {
     void OnTriggerEnter()
     {
-        Debug.Log("clear!");
+        string currentScene = SceneManager.GetActiveScene().name;
+        string newScene = "Level" + (int.Parse(currentScene.Substring(5, 1)) + 1);
+        SceneManager.LoadScene(newScene);
     }
 }

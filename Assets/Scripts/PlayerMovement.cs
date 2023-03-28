@@ -18,14 +18,12 @@ public class PlayerMovement : MonoBehaviour
     // charge force when held
     public void OnMouseDown()
     {
-        Debug.Log("down");
         charging = true;
     }
 
     // apply force when released and clear variables
     public void OnMouseUp()
     {
-        Debug.Log("up");
         LaunchBall();
     }
 
